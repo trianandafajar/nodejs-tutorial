@@ -1,8 +1,8 @@
-const say = "Hello World";
+const say = "Hello World!!";
 
 const employee = {
-  name: "John",
-  age: 30,
+  name: "Alvin",
+  age: 25,
 };
 
 // module.exports.say = say;
