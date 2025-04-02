@@ -1,33 +1,40 @@
 import http from "http";
-import read from "./utils/read.js";
+import fs from "fs/promises";
+import path from "path";
 
-const home = await read("./src/page/home.html");
-const about = await read("./src/page/about.html");
-const personal = await read("./src/page/personal.html");
+const read = async (filePath) => {
+  try {
+    return await fs.readFile(path.resolve(filePath), "utf-8");
+  } catch (error) {
+    return "<h1>500 Internal Server Error</h1>";
+  }
+};
 
-const server = http.createServer((req, res) => {
-  const url = req.url;
+const server = http.createServer(async (req, res) => {
   res.statusCode = 200;
   res.setHeader("Content-Type", "text/html");
-  let page = "";
-  switch (url) {
+
+  let filePath = "";
+  switch (req.url) {
     case "/":
-      page = home;
+      filePath = "./src/page/home.html";
       break;
     case "/about":
-      page = about;
+      filePath = "./src/page/about.html";
       break;
     case "/personal":
-      page = personal;
+      filePath = "./src/page/personal.html";
       break;
     default:
-      page = home;
+      filePath = "./src/page/404.html"; // Halaman Not Found
+      res.statusCode = 404;
       break;
   }
-  res.write(page);
-  res.end();
+
+  const page = await read(filePath);
+  res.end(page);
 });
 
 server.listen(3000, () => {
-  console.log("Server berjalan http://localhost:3000");
+  console.log("Server berjalan di http://localhost:3000");
 });
